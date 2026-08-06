@@ -16,9 +16,15 @@ git log -1 --format='%H %cI'
 
 # 2. Recompute a key's fingerprint independently.
 #    Extract a publicKeyPem from the manifest into key.pem, then:
-openssl pkey -pubin -in key.pem -outform DER | openssl dgst -sha256
-#    The digest must equal that entry's spkiSha256.
+openssl pkey -pubin -in key.pem -outform DER | openssl dgst -sha256 | awk '{print "sha256:"$NF}'
+#    The result must equal that entry's spkiSha256, string for string.
 ```
+
+**The `awk` is not decoration.** That one openssl command prints three different strings depending on
+which openssl you have — `SHA2-256(stdin)= 4af8…` on OpenSSL 3, `SHA256(stdin)= 4af8…` on OpenSSL
+1.1, and a bare `4af8…` on the LibreSSL that ships as `/usr/bin/openssl` on macOS — while this
+manifest stores `sha256:4af8…`. Same hex, four different strings. The `awk` normalises all of them so
+you are comparing a value rather than reading past a prefix, and a mismatch means a mismatch.
 
 Match a Guard record to its key on **`keyVersionName`**, which is byte-identical to the
 `keyVersionId` stamped into every Guard attestation. Match exactly. Never coerce a record to a
@@ -31,13 +37,32 @@ every commit here is a key event and the publication time is a commit date rathe
 assert about ourselves. That only means something if the history is hard to rewrite, so:
 
 ```bash
-# Every commit is signed. This is readable by anyone, with no permissions:
-gh api repos/40southau/guard-trust/commits \
-  --jq '.[] | "\(.sha[0:8]) verified=\(.commit.verification.verified) \(.commit.verification.reason)"'
+# Every commit is signed. Plain HTTPS — no account, no token, no permission from us:
+curl -s https://api.github.com/repos/40southau/guard-trust/commits \
+  | jq -r '.[] | "\(.sha[0:8]) verified=\(.commit.verification.verified) \(.commit.verification.reason)"'
 
 # The signing key is published on the GitHub account, so you can confirm who signed:
-gh api users/savvymonkey.foo/ssh_signing_keys
+curl -s https://api.github.com/users/savvymonkeyfoo/ssh_signing_keys
 ```
+
+`jq` only formats; the raw JSON carries the same fields if you would rather not install it.
+
+**Both of those are measured, not assumed** — the point of this page is that you need nothing from
+us, so the commands have to actually work with nothing:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' https://api.github.com/users/savvymonkeyfoo/ssh_signing_keys
+# 200
+curl -s -o /dev/null -w '%{http_code}\n' https://api.github.com/repos/40southau/guard-trust/commits
+# 200
+```
+
+**One wrinkle, stated so a correct check does not look like a failure.** The initial commit
+(`db33f33`) is signed by **GitHub's own web-flow key** — it was created through the web UI — while
+every commit after it is SSH-signed with the key above. The API reports `verified=true` for both. A
+local `git log --show-signature` will verify the SSH commits and report the web-flow one as
+unverified, because verifying that one needs GitHub's PGP key rather than ours. That is a key your
+machine does not have, not an unsigned commit in this history.
 
 Branch protection on `main` additionally refuses force-pushes and deletions and requires verified
 signatures, admin included. **Take that as our claim, not as your evidence** — reading a
