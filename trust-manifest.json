@@ -1,0 +1,70 @@
+{
+  "declaredButAbsentFromEstate": [
+    {
+      "cryptoKey": "audit-chain-head-key",
+      "environment": "prod",
+      "projectId": "sg-guard-prod",
+      "status": "declared in Guard's infrastructure code, not present in the project \u2014 no records have been signed under it"
+    }
+  ],
+  "derivedFrom": [
+    "infra/terraform/modules/kms-signing/main.tf",
+    "infra/terraform/environments/*/variables.tf",
+    "a live `gcloud kms keys versions list` snapshot"
+  ],
+  "keyVersionNameIsExact": "keyVersionName is byte-identical to the keyVersionId Guard stamps into each attestation. Match on it exactly; never coerce a record to a version it was not signed under.",
+  "keys": [
+    {
+      "algorithm": "EC_SIGN_P256_SHA256",
+      "cryptoKey": "evidence-attestation-key",
+      "environment": "dev",
+      "keyVersionName": "projects/sg-guard-dev/locations/australia-southeast1/keyRings/guard-evidence-signing/cryptoKeys/evidence-attestation-key/cryptoKeyVersions/1",
+      "projectId": "sg-guard-dev",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAECxtFZqGQyjPkuV8kiXuCrcNI/mQw\nbOd6gVWu4hLoTwZZPmHl9knGl4PfpKemHXlrUqJ17uWOCcmk+LN2GSW1zA==\n-----END PUBLIC KEY-----\n",
+      "spkiSha256": "sha256:4af80d567db86c28a31a641a74e37b1d78f7d5d7460463a3d5232daed4683977"
+    },
+    {
+      "algorithm": "EC_SIGN_P256_SHA256",
+      "cryptoKey": "audit-chain-head-key",
+      "environment": "dev",
+      "keyVersionName": "projects/sg-guard-dev/locations/australia-southeast1/keyRings/guard-evidence-signing/cryptoKeys/audit-chain-head-key/cryptoKeyVersions/1",
+      "projectId": "sg-guard-dev",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEg/mMBTtWYIxGNn8VJch7MZ+cLvQT\nwtebyDyKsuVWe9lAugmbmIjdaC3ZYky0ZdBoWYG6wNhsqsx7UlaMLVrQ3w==\n-----END PUBLIC KEY-----\n",
+      "spkiSha256": "sha256:dabdb3e0aa0ad3026acf8ef2c390297e869bddca18b7baf32d62797bccd7db7a"
+    },
+    {
+      "algorithm": "EC_SIGN_P256_SHA256",
+      "cryptoKey": "evidence-attestation-key",
+      "environment": "prod",
+      "keyVersionName": "projects/sg-guard-prod/locations/australia-southeast1/keyRings/guard-evidence-signing/cryptoKeys/evidence-attestation-key/cryptoKeyVersions/1",
+      "projectId": "sg-guard-prod",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1CNr69OgAufyi86NS7d8XSd7JHPb\nHa1OjnFrKDGGt9lKL39dR4xltDKEX94CxyrDWW0d+0xI5auEfndRZiZWEw==\n-----END PUBLIC KEY-----\n",
+      "spkiSha256": "sha256:22bfe092a33f0037fe85f01293a56bb33b255bbda1b0d618dbaee4c701d84df5"
+    },
+    {
+      "algorithm": "EC_SIGN_P256_SHA256",
+      "cryptoKey": "evidence-attestation-key",
+      "environment": "staging",
+      "keyVersionName": "projects/sg-guard-staging/locations/australia-southeast1/keyRings/guard-evidence-signing/cryptoKeys/evidence-attestation-key/cryptoKeyVersions/1",
+      "projectId": "sg-guard-staging",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEketDBzbfjk8AmC500Qo9QyjEH+RZ\nrLJHTjOjywiuKY37Lvaf2yKmVbye+ZEUQwwFwhd5caCmcy6h0PLdFkyI0A==\n-----END PUBLIC KEY-----\n",
+      "spkiSha256": "sha256:78c11d5d840eaf13f119a5a54247d92a485743be507a89f3d6ac933ddd1e9102"
+    },
+    {
+      "algorithm": "EC_SIGN_P256_SHA256",
+      "cryptoKey": "audit-chain-head-key",
+      "environment": "staging",
+      "keyVersionName": "projects/sg-guard-staging/locations/australia-southeast1/keyRings/guard-evidence-signing/cryptoKeys/audit-chain-head-key/cryptoKeyVersions/1",
+      "projectId": "sg-guard-staging",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5PX4qXBgdGvonkA7tA50G8FtEYdD\nqpOQilsk4GZGDunwdFZHfnTrkKtof2yacl6cBn1/0MHZAHUskQ9caDPttg==\n-----END PUBLIC KEY-----\n",
+      "spkiSha256": "sha256:9202bc658fb0a05b8e9a5b915016b9fc87f07e2b49afef06bc8d9abd9c74b6b5"
+    }
+  ],
+  "manifestVersion": 1,
+  "whatThisDoesNotProve": [
+    "These are public keys only. Possession of them proves nothing about any individual record.",
+    "There is no export bundle yet: Guard does not hand an auditor a portable set of records and signed chain heads. Verification today still requires access Guard controls.",
+    "No verifier ships yet. Chain-verification code exists in Guard's libraries and is not run by anything a customer can invoke.",
+    "This manifest is generated from Guard's own infrastructure declarations and published by Guard. Its integrity rests on the public history of the location it is published in \u2014 read that history, do not take this file's word for itself."
+  ]
+}
